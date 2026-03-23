@@ -131,7 +131,7 @@ function buildModules(task){
   if(!mods)return;
 
   if(task==="task1" && mods.patterns && mods.patterns.length){
-    var mc=createModule("\ud83d\udcdd","Grammar Structure Patterns","Wh- + Aux + S + V and other key sentence patterns for Build a Sentence");
+    var mc=createModule(typeof ICON!=="undefined"?ICON.clipboard(16):"\ud83d\udcdd","Grammar Structure Patterns","Wh- + Aux + S + V and other key sentence patterns for Build a Sentence");
     var body=mc.querySelector(".module-body");
     mods.patterns.forEach(function(p){
       var d=document.createElement("div");d.className="pattern";
@@ -149,7 +149,7 @@ function buildModules(task){
     container.appendChild(mc);
   }
   if(task==="task1" && mods.distractors && mods.distractors.length){
-    var mc2=createModule("\u26a0\ufe0f","Distractor Word Identification","OG confirms some questions include an extra word not used in the answer. Learn to spot the trap.");
+    var mc2=createModule(typeof ICON!=="undefined"?ICON.alertTriangle(16):"\u26a0\ufe0f","Distractor Word Identification","OG confirms some questions include an extra word not used in the answer. Learn to spot the trap.");
     var body2=mc2.querySelector(".module-body");
     mods.distractors.forEach(function(d){
       var row=document.createElement("div");row.className="distractor";
@@ -166,7 +166,7 @@ function buildModules(task){
     container.appendChild(mc2);
   }
   if(task==="task2" && mods.verbs && mods.verbs.length){
-    var mc3=createModule("\ud83d\udd0d","Instruction Verb Comparison","describe vs explain vs suggest vs request vs mention vs recommend - know the difference to stay on topic");
+    var mc3=createModule(typeof ICON!=="undefined"?ICON.search(16):"\ud83d\udd0d","Instruction Verb Comparison","describe vs explain vs suggest vs request vs mention vs recommend - know the difference to stay on topic");
     var body3=mc3.querySelector(".module-body");
     var grid=document.createElement("div");grid.className="verb-compare";
     mods.verbs.forEach(function(v){
@@ -183,7 +183,7 @@ function buildModules(task){
     container.appendChild(mc3);
   }
   if(task==="task2" && mods.clusters && mods.clusters.length){
-    var mc4=createModule("\ud83e\udde9","Scenario Word Clusters","Words that co-occur in email prompts - memorize as groups for 3x efficiency");
+    var mc4=createModule(typeof ICON!=="undefined"?ICON.puzzle(16):"\ud83e\udde9","Scenario Word Clusters","Words that co-occur in email prompts - memorize as groups for 3x efficiency");
     var body4=mc4.querySelector(".module-body");
     mods.clusters.forEach(function(cl){
       var d=document.createElement("div");d.className="cluster";
@@ -201,7 +201,7 @@ function buildModules(task){
     container.appendChild(mc4);
   }
   if(task==="task3" && mods.profTemplates && mods.profTemplates.length){
-    var mc5=createModule("\ud83c\udfaf","Professor Question Templates","Recognizing these patterns tells you exactly what direction to write");
+    var mc5=createModule(typeof ICON!=="undefined"?ICON.crosshair(16):"\ud83c\udfaf","Professor Question Templates","Recognizing these patterns tells you exactly what direction to write");
     var body5=mc5.querySelector(".module-body");
     mods.profTemplates.forEach(function(t){
       var d=document.createElement("div");d.className="prof-tpl";
@@ -219,9 +219,10 @@ function buildModules(task){
 function createModule(icon,title,desc){
   var mc=document.createElement("div");mc.className="module-card";
   var head=document.createElement("div");head.className="module-head";
-  var ic=document.createElement("span");ic.className="module-icon";ic.textContent=icon;
+  var ic=document.createElement("span");ic.className="module-icon";
+  if(icon.indexOf("<svg")===0){ic.innerHTML=icon;}else{ic.textContent=icon;}
   var ti=document.createElement("span");ti.className="module-title";ti.textContent=title;
-  var ar=document.createElement("span");ar.className="module-arrow";ar.textContent="\u25bc";
+  var ar=document.createElement("span");ar.className="module-arrow";if(typeof ICON!=="undefined"){ar.innerHTML=ICON.chevronDown(14);}else{ar.textContent="\u25bc";}
   head.appendChild(ic);head.appendChild(ti);head.appendChild(ar);
   head.addEventListener("click",function(){mc.classList.toggle("open");});
   mc.appendChild(head);
@@ -269,7 +270,9 @@ function renderWords(task){
     var sp2=document.createElement("span");sp2.className="wc-ph";sp2.textContent=w.ph;
     var sp3=document.createElement("span");sp3.className="wc-pos";sp3.textContent=w.pos;
     var sp4=document.createElement("span");sp4.className="wc-cn";sp4.textContent=w.cn;
-    var sp5=document.createElement("span");sp5.className="wc-stars";sp5.textContent="\u2b50".repeat(w.stars||1);
+    var sp5=document.createElement("span");sp5.className="wc-stars";
+    if(typeof ICON!=="undefined"){var _s="";for(var _i=0;_i<(w.stars||1);_i++)_s+=ICON.star(12);sp5.innerHTML=_s;}
+    else{sp5.textContent="\u2b50".repeat(w.stars||1);}
     var spacer=document.createElement("span");spacer.className="wc-spacer";
     var lbl=document.createElement("label");lbl.style.cssText="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--dim);cursor:pointer";
     var cb=document.createElement("input");cb.type="checkbox";cb.checked=!!mastered[task+"_"+w.w];
@@ -280,9 +283,10 @@ function renderWords(task){
       renderWords(t);updateHeaderStats();
     };})(task,w.w));
     lbl.appendChild(cb);lbl.appendChild(document.createTextNode("Mastered"));
-    var arrow=document.createElement("span");arrow.className="wc-arrow";arrow.textContent="\u25bc";
+    var arrow=document.createElement("span");arrow.className="wc-arrow";if(typeof ICON!=="undefined"){arrow.innerHTML=ICON.chevronDown(14);}else{arrow.textContent="\u25bc";}
     // TTS sound button
-    var soundBtn=document.createElement("button");soundBtn.className="wc-sound";soundBtn.textContent="\ud83d\udd0a";
+    var soundBtn=document.createElement("button");soundBtn.className="wc-sound";
+    if(typeof ICON!=="undefined"){soundBtn.innerHTML=ICON.volume(14);}else{soundBtn.textContent="\ud83d\udd0a";}
     soundBtn.addEventListener("click",(function(word){return function(e){e.stopPropagation();if(typeof speakWord==="function")speakWord(word);};})(w.w));
     head.appendChild(sp1);head.appendChild(sp2);head.appendChild(sp3);head.appendChild(sp5);
     head.appendChild(soundBtn);head.appendChild(sp4);head.appendChild(spacer);head.appendChild(lbl);head.appendChild(arrow);
@@ -301,7 +305,7 @@ function renderWords(task){
       var snum=document.createElement("span");snum.className="s-num s-num-"+ci.c;snum.textContent=(si+1);
       var scat=document.createElement("span");scat.className="s-cat";scat.textContent=ci.l;
       var sen=document.createElement("span");sen.className="s-en";setEmHTML(sen,s[1]);
-      var sar=document.createElement("span");sar.className="s-arrow";sar.textContent="\u25bc";
+      var sar=document.createElement("span");sar.className="s-arrow";if(typeof ICON!=="undefined"){sar.innerHTML=ICON.chevronDown(12);}else{sar.textContent="\u25bc";}
       shead.appendChild(snum);shead.appendChild(scat);shead.appendChild(sen);shead.appendChild(sar);
       shead.addEventListener("click",function(){sent.classList.toggle("open");});
       sent.appendChild(shead);

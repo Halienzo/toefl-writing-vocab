@@ -323,8 +323,8 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
 
 <header>
   <div class="hdr-actions">
-    <button class="hdr-btn" id="themeBtn" title="Toggle theme">&#127769;</button>
-    <button class="hdr-btn" id="ttsBtn" title="Toggle audio pronunciation">&#128264;</button>
+    <button class="hdr-btn" id="themeBtn" title="Toggle theme"></button>
+    <button class="hdr-btn" id="ttsBtn" title="Toggle audio pronunciation"></button>
   </div>
   <h1>TOEFL iBT Writing Vocabulary</h1>
   <p>248 words | 2,010 sentences with grammar analysis | 2026 OG + Real Exams</p>
@@ -446,20 +446,21 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
   </div>
 </div>
 
-<button class="scroll-top" id="scrollTop" title="Back to top">&#8593;</button>
+<button class="scroll-top" id="scrollTop" title="Back to top"></button>
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav">
-  <div class="nav-item active" data-t="task1"><span class="nav-icon">&#9997;</span><span>Task 1</span></div>
-  <div class="nav-item" data-t="task2"><span class="nav-icon">&#9993;</span><span>Task 2</span></div>
-  <div class="nav-item" data-t="task3"><span class="nav-icon">&#128172;</span><span>Task 3</span></div>
-  <div class="nav-item" data-t="quiz"><span class="nav-icon">&#10068;</span><span>Quiz</span></div>
-  <div class="nav-item" data-t="mock"><span class="nav-icon">&#127919;</span><span>Mock</span></div>
-  <div class="nav-item" data-t="settings"><span class="nav-icon">&#9881;</span><span>Settings</span></div>
+  <div class="nav-item active" data-t="task1"><span class="nav-icon" id="navIcon1"></span><span>Task 1</span></div>
+  <div class="nav-item" data-t="task2"><span class="nav-icon" id="navIcon2"></span><span>Task 2</span></div>
+  <div class="nav-item" data-t="task3"><span class="nav-icon" id="navIcon3"></span><span>Task 3</span></div>
+  <div class="nav-item" data-t="quiz"><span class="nav-icon" id="navIconQuiz"></span><span>Quiz</span></div>
+  <div class="nav-item" data-t="mock"><span class="nav-icon" id="navIconMock"></span><span>Mock</span></div>
+  <div class="nav-item" data-t="settings"><span class="nav-icon" id="navIconSettings"></span><span>Settings</span></div>
 </nav>
 
 <footer>TOEFL iBT 2026 | 248 Words | 2,010 Sentences | OG + Real Exams</footer>
 
+<script src="toefl-icons.js"></script>
 <script src="toefl-vocab-engine.js"></script>
 <script src="toefl-task1-data.js"></script>
 <script src="toefl-task2-data.js"></script>
@@ -494,11 +495,23 @@ if(typeof document.getElementById('tabBar')!=='undefined'){
   if(oldTabBar)oldTabBar.style.display='none';
 }
 
+// --- Set SVG icons (all from our own ICON module - safe static SVG) ---
+function setIcon(id,svgStr){var el=document.getElementById(id);if(el){el.innerHTML=svgStr;}}
+if(typeof ICON!=='undefined'){
+  setIcon('navIcon1',ICON.pen(18));
+  setIcon('navIcon2',ICON.mail(18));
+  setIcon('navIcon3',ICON.chat(18));
+  setIcon('navIconQuiz',ICON.helpCircle(18));
+  setIcon('navIconMock',ICON.target(18));
+  setIcon('navIconSettings',ICON.settings(18));
+  setIcon('scrollTop',ICON.arrowUp(18));
+  setIcon('ttsBtn',ICON.volume(16));
+}
 // --- Theme toggle (header button + settings toggle) ---
 function applyTheme(isLight){
   if(isLight)document.documentElement.classList.add('light');
   else document.documentElement.classList.remove('light');
-  document.getElementById('themeBtn').textContent=isLight?'\u2600\ufe0f':'\ud83c\udf19';
+  setIcon('themeBtn',isLight?ICON.sun(16):ICON.moon(16));
   document.querySelector('meta[name="theme-color"]').content=isLight?'#f8fafc':'#0a0f1a';
   var st=document.getElementById('settingTheme');
   if(st){if(isLight)st.classList.add('on');else st.classList.remove('on');}
@@ -510,11 +523,13 @@ document.getElementById('themeBtn').addEventListener('click',function(){
 document.getElementById('settingTheme').addEventListener('click',function(){
   applyTheme(!this.classList.contains('on'));
 });
-if(localStorage.getItem('toefl_theme2')==='light')applyTheme(true);
+if(localStorage.getItem('toefl_theme2')==='light'){applyTheme(true);}
+else{setIcon('themeBtn',ICON.moon(16));}
 
 // --- TTS (text-to-speech) ---
 var ttsEnabled=localStorage.getItem('toefl_tts')==='1';
 function updateTTSUI(){
+  setIcon('ttsBtn',ttsEnabled?ICON.volume(16):ICON.volumeOff(16));
   document.getElementById('ttsBtn').style.opacity=ttsEnabled?'1':'.4';
   var st=document.getElementById('settingTTS');
   if(st){if(ttsEnabled)st.classList.add('on');else st.classList.remove('on');}

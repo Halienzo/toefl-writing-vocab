@@ -84,11 +84,11 @@ function renderMockHome(pane){
 
   // Mode selection cards
   var modes = [
-    {icon:"\ud83c\udfaf", title:"Full Mock Test", sub:"10 questions, 7-min timer, real exam simulation", mode:"test", color:"var(--t1)"},
-    {icon:"\ud83d\udcda", title:"Practice Mode", sub:"No timer, instant feedback, choose difficulty", mode:"practice", color:"var(--accent)"},
-    {icon:"\ud83e\udde0", title:"Pattern Learning", sub:"Master the 5 core grammar patterns with examples", mode:"patterns", color:"var(--purple)"},
-    {icon:"\u26a0\ufe0f", title:"Distractor Training", sub:"Spot the extra word that doesn't belong", mode:"distractor", color:"var(--red)"},
-    {icon:"\u23f1\ufe0f", title:"Speed Drill", sub:"Find Subject + Verb in under 5 seconds", mode:"strategy", color:"var(--orange)"}
+    {icon:typeof ICON!=="undefined"?ICON.target(20):"T", title:"Full Mock Test", sub:"10 questions, 7-min timer, real exam simulation", mode:"test", color:"var(--t1)"},
+    {icon:typeof ICON!=="undefined"?ICON.book(20):"P", title:"Practice Mode", sub:"No timer, instant feedback, choose difficulty", mode:"practice", color:"var(--accent)"},
+    {icon:typeof ICON!=="undefined"?ICON.brain(20):"L", title:"Pattern Learning", sub:"Master the 5 core grammar patterns with examples", mode:"patterns", color:"var(--purple)"},
+    {icon:typeof ICON!=="undefined"?ICON.alertTriangle(20):"D", title:"Distractor Training", sub:"Spot the extra word that doesn't belong", mode:"distractor", color:"var(--red)"},
+    {icon:typeof ICON!=="undefined"?ICON.timer(20):"S", title:"Speed Drill", sub:"Find Subject + Verb in under 5 seconds", mode:"strategy", color:"var(--orange)"}
   ];
 
   var grid = document.createElement("div");
@@ -101,13 +101,16 @@ function renderMockHome(pane){
     var head = document.createElement("div");
     head.className = "module-head";
     head.style.cssText = "border-left:4px solid "+m.color;
-    var ic = document.createElement("span"); ic.className = "module-icon"; ic.textContent = m.icon;
+    var ic = document.createElement("span"); ic.className = "module-icon";
+    // Icon is either our own ICON module SVG (safe) or a single text character
+    if(m.icon && m.icon.indexOf("<svg")===0){ic.innerHTML=m.icon;}else{ic.textContent=m.icon;}
     var wrap = document.createElement("div"); wrap.style.flex = "1";
     var ti = document.createElement("div"); ti.style.cssText = "font-size:.88rem;font-weight:700"; ti.textContent = m.title;
     var su = document.createElement("div"); su.style.cssText = "font-size:.72rem;color:var(--muted)"; su.textContent = m.sub;
     wrap.appendChild(ti); wrap.appendChild(su);
     head.appendChild(ic); head.appendChild(wrap);
-    var ar = document.createElement("span"); ar.style.cssText = "color:var(--dim);font-size:.8rem"; ar.textContent = "\u2192";
+    var ar = document.createElement("span"); ar.style.cssText = "color:var(--dim)";
+    if(typeof ICON!=="undefined"){ar.innerHTML=ICON.chevronRight(16);}else{ar.textContent="\u2192";}
     head.appendChild(ar);
     card.appendChild(head);
     card.addEventListener("click", function(){ startMode(m.mode); });
@@ -615,7 +618,7 @@ function renderPatternLearning(pane){
     body.appendChild(descP);
     // Signal
     var signal = document.createElement("div"); signal.style.cssText = "font-size:.78rem;color:var(--gold);margin-bottom:10px;padding:6px 10px;background:var(--card);border-radius:6px";
-    signal.textContent = "\ud83d\udca1 " + pat.signal;
+    if(typeof ICON!=="undefined"){signal.innerHTML=ICON.lightbulb(14)+" "+pat.signal;}else{signal.textContent=pat.signal;}
     body.appendChild(signal);
     // Examples
     pat.examples.forEach(function(ex){
