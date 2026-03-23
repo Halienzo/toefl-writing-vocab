@@ -63,6 +63,11 @@ html.light .bottom-nav{box-shadow:0 -1px 6px rgba(0,0,0,.06)}
 .tab-btn[data-t="task3"].active{color:var(--t3);border-bottom-color:var(--t3)}
 .tab-btn[data-t="quiz"].active{color:var(--gold);border-bottom-color:var(--gold)}
 .tab-btn[data-t="mock"].active{color:var(--t1);border-bottom-color:var(--t1)}
+.tab-btn[data-t="emailmock"].active{color:var(--t2);border-bottom-color:var(--t2)}
+.tab-btn[data-t="discmock"].active{color:var(--t3);border-bottom-color:var(--t3)}
+.nav-item[data-t="emailmock"].active{color:var(--t2)}
+.nav-item[data-t="discmock"].active{color:var(--t3)}
+.nav-item[data-t="mock"].active{color:var(--t1)}
 .tab-btn[data-t="settings"].active{color:var(--muted);border-bottom-color:var(--muted)}
 
 /* ============================================
@@ -337,7 +342,9 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
   <button class="tab-btn" data-t="task2">Task 2</button>
   <button class="tab-btn" data-t="task3">Task 3</button>
   <button class="tab-btn" data-t="quiz">Quiz</button>
-  <button class="tab-btn" data-t="mock">Mock Test</button>
+  <button class="tab-btn" data-t="mock">Sentence</button>
+  <button class="tab-btn" data-t="emailmock">Email</button>
+  <button class="tab-btn" data-t="discmock">Discussion</button>
   <button class="tab-btn" data-t="settings">Settings</button>
 </div>
 
@@ -405,8 +412,14 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
     <div class="quiz-area" id="quizArea"></div>
   </div>
 
-  <!-- MOCK TEST -->
+  <!-- MOCK TEST (Build a Sentence) -->
   <div class="tab-pane" id="pane-mock"></div>
+
+  <!-- EMAIL MOCK (Task 2 Writing) -->
+  <div class="tab-pane" id="pane-emailmock"></div>
+
+  <!-- DISCUSSION MOCK (Task 3 Writing) -->
+  <div class="tab-pane" id="pane-discmock"></div>
 
   <!-- SETTINGS (NEW) -->
   <div class="tab-pane" id="pane-settings">
@@ -450,12 +463,11 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav">
-  <div class="nav-item active" data-t="task1"><span class="nav-icon" id="navIcon1"></span><span>Task 1</span></div>
-  <div class="nav-item" data-t="task2"><span class="nav-icon" id="navIcon2"></span><span>Task 2</span></div>
-  <div class="nav-item" data-t="task3"><span class="nav-icon" id="navIcon3"></span><span>Task 3</span></div>
-  <div class="nav-item" data-t="quiz"><span class="nav-icon" id="navIconQuiz"></span><span>Quiz</span></div>
-  <div class="nav-item" data-t="mock"><span class="nav-icon" id="navIconMock"></span><span>Mock</span></div>
-  <div class="nav-item" data-t="settings"><span class="nav-icon" id="navIconSettings"></span><span>Settings</span></div>
+  <div class="nav-item active" data-t="task1"><span class="nav-icon" id="navIcon1"></span><span>Vocab</span></div>
+  <div class="nav-item" data-t="mock"><span class="nav-icon" id="navIconMock"></span><span>Sentence</span></div>
+  <div class="nav-item" data-t="emailmock"><span class="nav-icon" id="navIconEmail"></span><span>Email</span></div>
+  <div class="nav-item" data-t="discmock"><span class="nav-icon" id="navIconDisc"></span><span>Discuss</span></div>
+  <div class="nav-item" data-t="settings"><span class="nav-icon" id="navIconSettings"></span><span>More</span></div>
 </nav>
 
 <footer>TOEFL iBT 2026 | 248 Words | 2,010 Sentences | OG + Real Exams</footer>
@@ -467,6 +479,8 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
 <script src="toefl-task3-full-data.js"></script>
 <script src="toefl-mock-questions.js"></script>
 <script src="toefl-mock-engine.js"></script>
+<script src="toefl-writing-prompts.js"></script>
+<script src="toefl-writing-mock.js"></script>
 <script>
 // --- Mobile nav + top tabs unified switching ---
 function switchPane(t){
@@ -478,6 +492,8 @@ function switchPane(t){
   if(pane)pane.classList.add('active');
   if(t==='quiz' && typeof initQuiz==='function')initQuiz();
   if(t==='mock' && typeof initMockTest==='function')initMockTest();
+  if(t==='emailmock' && typeof initWritingMock==='function')initWritingMock('task2');
+  if(t==='discmock' && typeof initWritingMock==='function')initWritingMock('task3');
   if(t==='settings')updateSettingsPane();
   window.scrollTo({top:0});
 }
@@ -498,11 +514,10 @@ if(typeof document.getElementById('tabBar')!=='undefined'){
 // --- Set SVG icons (all from our own ICON module - safe static SVG) ---
 function setIcon(id,svgStr){var el=document.getElementById(id);if(el){el.innerHTML=svgStr;}}
 if(typeof ICON!=='undefined'){
-  setIcon('navIcon1',ICON.pen(18));
-  setIcon('navIcon2',ICON.mail(18));
-  setIcon('navIcon3',ICON.chat(18));
-  setIcon('navIconQuiz',ICON.helpCircle(18));
+  setIcon('navIcon1',ICON.book(18));
   setIcon('navIconMock',ICON.target(18));
+  setIcon('navIconEmail',ICON.mail(18));
+  setIcon('navIconDisc',ICON.chat(18));
   setIcon('navIconSettings',ICON.settings(18));
   setIcon('scrollTop',ICON.arrowUp(18));
   setIcon('ttsBtn',ICON.volume(16));
