@@ -1,0 +1,7 @@
+*.pdf
+*.docx
+.claude/
+docs/
+toefl-task3-demo.html
+toefl-task3-data.js
+toefl-writing-vocabulary.html

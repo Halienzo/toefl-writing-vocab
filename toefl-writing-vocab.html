@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0f1a">
+<link rel="manifest" href="manifest.json">
+<title>TOEFL Writing Vocab</title>
+<style>
+/* ============================================
+   RESET & VARIABLES
+   ============================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0f1a;--surface:#111827;--card:#1e293b;--card2:#273548;
+  --border:#334155;--text:#e2e8f0;--muted:#94a3b8;--dim:#64748b;
+  --accent:#34d399;--accent2:#6ee7b7;--gold:#fbbf24;--blue:#60a5fa;
+  --purple:#a78bfa;--pink:#f472b6;--cyan:#22d3ee;--orange:#fb923c;--red:#f87171;
+  --shadow:0 2px 8px rgba(0,0,0,.3);--t1:#38bdf8;--t2:#818cf8;--t3:#34d399;
+  --nav-h:56px;--safe-b:env(safe-area-inset-bottom,0px);
+  --font-scale:1;
+}
+html.light{
+  --bg:#f8fafc;--surface:#fff;--card:#f1f5f9;--card2:#e2e8f0;
+  --border:#cbd5e1;--text:#1e293b;--muted:#475569;--dim:#64748b;
+  --accent:#059669;--accent2:#047857;--gold:#b45309;--blue:#2563eb;
+  --purple:#7c3aed;--pink:#db2777;--cyan:#0891b2;--orange:#ea580c;--red:#dc2626;
+  --shadow:0 1px 4px rgba(0,0,0,.06);--t1:#0284c7;--t2:#6d28d9;--t3:#047857;
+}
+html{font-size:calc(14px * var(--font-scale));scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;transition:background .3s,color .3s;padding-bottom:calc(var(--nav-h) + var(--safe-b) + 8px);overflow-x:hidden}
+
+/* ============================================
+   MOBILE-FIRST BOTTOM NAV
+   ============================================ */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--surface);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-b);box-shadow:0 -2px 12px rgba(0,0,0,.2)}
+html.light .bottom-nav{box-shadow:0 -1px 6px rgba(0,0,0,.06)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 6px;cursor:pointer;color:var(--dim);font-size:.62rem;font-weight:600;transition:color .15s;gap:2px;min-height:var(--nav-h);position:relative;-webkit-user-select:none;user-select:none}
+.nav-item .nav-icon{font-size:1.2rem;line-height:1}
+.nav-item.active{color:var(--accent)}
+.nav-item[data-t="task1"].active{color:var(--t1)}
+.nav-item[data-t="task2"].active{color:var(--t2)}
+.nav-item[data-t="task3"].active{color:var(--t3)}
+.nav-item[data-t="quiz"].active{color:var(--gold)}
+.nav-item[data-t="settings"].active{color:var(--muted)}
+.nav-item::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;border-radius:1px;background:transparent;transition:background .15s}
+.nav-item.active::after{background:currentColor}
+/* Hide bottom nav on desktop, show top tabs instead */
+@media(min-width:769px){.bottom-nav{display:none}}
+
+/* ============================================
+   TOP TAB BAR (desktop/tablet landscape)
+   ============================================ */
+.top-tabs{display:none;gap:0;justify-content:center;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:90;background:var(--bg);padding-top:4px}
+@media(min-width:769px){.top-tabs{display:flex}}
+.tab-btn{padding:12px 24px;background:transparent;border:none;color:var(--dim);font-size:.88rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-btn[data-t="task1"].active{color:var(--t1);border-bottom-color:var(--t1)}
+.tab-btn[data-t="task2"].active{color:var(--t2);border-bottom-color:var(--t2)}
+.tab-btn[data-t="task3"].active{color:var(--t3);border-bottom-color:var(--t3)}
+.tab-btn[data-t="quiz"].active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn[data-t="settings"].active{color:var(--muted);border-bottom-color:var(--muted)}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.container{max-width:1060px;margin:0 auto;padding:0 12px}
+header{text-align:center;padding:16px 12px 12px;position:relative}
+header h1{font-size:1.15rem;color:var(--accent);font-weight:800;margin-bottom:2px}
+header p{color:var(--muted);font-size:.72rem;max-width:700px;margin:0 auto;line-height:1.4}
+.hdr-stats{display:flex;gap:8px;justify-content:center;margin-top:6px;font-size:.68rem;color:var(--dim);flex-wrap:wrap}
+.hdr-stats b{color:var(--muted)}
+.hdr-actions{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.hdr-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.hdr-btn:hover,.hdr-btn:active{border-color:var(--accent);background:var(--card)}
+@media(min-width:769px){
+  header{padding:28px 16px 18px}
+  header h1{font-size:1.5rem}
+  header p{font-size:.82rem}
+}
+
+/* ============================================
+   TAB PANES
+   ============================================ */
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/* ============================================
+   STICKY SEARCH + FILTERS
+   ============================================ */
+.sticky-bar{position:sticky;top:0;z-index:80;background:var(--bg);padding:8px 0 4px;border-bottom:1px solid var(--border);margin:0 -12px;padding-left:12px;padding-right:12px}
+@media(min-width:769px){.sticky-bar{top:48px}}
+.search{width:100%;padding:10px 14px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;font-size:.88rem;outline:none;transition:border-color .15s}
+.search:focus{border-color:var(--accent)}
+.search::placeholder{color:var(--dim)}
+.filter-row{display:flex;gap:5px;padding:4px 0;flex-wrap:wrap;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-row label{font-size:.7rem;color:var(--dim);margin-right:2px;flex-shrink:0}
+.chip{padding:5px 12px;border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:16px;cursor:pointer;font-size:.72rem;transition:all .12s;white-space:nowrap;flex-shrink:0;-webkit-user-select:none;user-select:none;min-height:30px;display:flex;align-items:center}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--accent);color:#0a0f1a;border-color:var(--accent);font-weight:600}
+html.light .chip.on{color:#fff}
+.stats-line{font-size:.72rem;color:var(--dim);padding:4px 0}
+.stats-line b{color:var(--muted)}
+
+/* ============================================
+   SUB TABS (Task 2 categories) - horizontal scroll
+   ============================================ */
+.sub-bar{display:flex;gap:4px;padding:6px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -12px;padding-left:12px;padding-right:12px}
+.sub-bar::-webkit-scrollbar{display:none}
+.sub-btn{padding:6px 14px;border:1px solid var(--border);background:var(--surface);color:var(--dim);border-radius:16px;cursor:pointer;font-size:.72rem;white-space:nowrap;flex-shrink:0;min-height:32px;transition:all .12s}
+.sub-btn:active{transform:scale(.95)}
+.sub-btn.on{background:var(--accent);color:#0a0f1a;border-color:var(--accent)}
+html.light .sub-btn.on{color:#fff}
+
+/* ============================================
+   TASK DESCRIPTION
+   ============================================ */
+.task-desc{background:var(--card);border-radius:10px;padding:12px 14px;margin:8px 0;border-left:4px solid var(--accent)}
+.task-desc h3{font-size:.85rem;color:var(--accent);margin-bottom:3px}
+.task-desc p{font-size:.73rem;color:var(--muted);line-height:1.5}
+.task-desc.t1{border-left-color:var(--t1)}.task-desc.t1 h3{color:var(--t1)}
+.task-desc.t2{border-left-color:var(--t2)}.task-desc.t2 h3{color:var(--t2)}
+.task-desc.t3{border-left-color:var(--t3)}.task-desc.t3 h3{color:var(--t3)}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+.progress{width:100%;height:3px;background:var(--card);border-radius:2px;margin:4px 0 8px}
+.progress-fill{height:100%;border-radius:2px;transition:width .4s}
+.pf-t1{background:var(--t1)}.pf-t2{background:var(--t2)}.pf-t3{background:var(--t3)}
+
+/* ============================================
+   MODULE CARDS (Grammar Patterns, etc.)
+   ============================================ */
+.module-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.module-head{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.module-icon{font-size:1rem}.module-title{font-size:.85rem;font-weight:700;flex:1}
+.module-arrow{color:var(--dim);font-size:.7rem;transition:transform .2s}
+.module-card.open .module-arrow{transform:rotate(180deg)}
+.module-body{display:none;padding:0 14px 12px}.module-card.open .module-body{display:block}
+.pattern{background:var(--card);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.pattern-formula{font-family:'SF Mono','Consolas',monospace;font-size:.82rem;color:var(--cyan);font-weight:700;margin-bottom:3px;overflow-x:auto}
+.pattern-ex{font-size:.78rem;color:var(--text);margin-bottom:2px}
+.pattern-ex em{font-style:normal;color:var(--accent);font-weight:600}
+.pattern-cn{font-size:.72rem;color:var(--muted)}
+.distractor{background:var(--card);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start}
+.distractor-q{font-size:.8rem;flex:1}
+.distractor-q em{font-style:normal;color:var(--red);font-weight:700;text-decoration:line-through}
+.distractor-ans{font-size:.75rem;color:var(--muted);cursor:pointer;padding:6px 12px;border:1px dashed var(--border);border-radius:6px;white-space:nowrap;min-height:32px;display:flex;align-items:center}
+.distractor-ans.show{border-style:solid;border-color:var(--accent);color:var(--accent)}
+.verb-compare{display:grid;grid-template-columns:1fr;gap:6px;margin-bottom:6px}
+@media(min-width:600px){.verb-compare{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.verb-compare{grid-template-columns:1fr 1fr 1fr}}
+.verb-box{background:var(--card);border-radius:8px;padding:10px 12px}
+.verb-box h4{color:var(--purple);font-size:.82rem;margin-bottom:3px}
+.verb-box .vb-def{font-size:.73rem;color:var(--gold);margin-bottom:4px}
+.verb-box .vb-ex{font-size:.75rem;color:var(--text);margin-bottom:2px}
+.verb-box .vb-diff{font-size:.7rem;color:var(--muted);font-style:italic;margin-top:3px;padding-top:3px;border-top:1px dashed var(--border)}
+.cluster{background:var(--card);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.cluster-name{font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:4px}
+.cluster-words{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}
+.cluster-word{padding:3px 8px;background:var(--card2);border-radius:10px;font-size:.72rem;color:var(--text);border:1px solid var(--border)}
+.cluster-sentence{font-size:.75rem;color:var(--muted);line-height:1.5}
+.cluster-sentence em{font-style:normal;color:var(--accent);font-weight:600}
+.prof-tpl{background:var(--card);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.prof-tpl-pattern{font-family:'SF Mono','Consolas',monospace;font-size:.8rem;color:var(--blue);font-weight:700;margin-bottom:3px}
+.prof-tpl-ex{font-size:.75rem;color:var(--text);margin-bottom:2px}
+.prof-tpl-tip{font-size:.7rem;color:var(--gold);margin-top:3px}
+
+/* ============================================
+   WORD CARD - touch optimized
+   ============================================ */
+.word-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .15s}
+.word-card:active{border-color:var(--accent)}
+.wc-head{display:flex;align-items:center;gap:6px;padding:12px 14px;cursor:pointer;flex-wrap:wrap;min-height:52px;-webkit-user-select:none;user-select:none}
+.wc-word{font-size:1.1rem;font-weight:800}
+.wc-ph{font-size:.75rem;color:var(--dim);font-style:italic}
+.wc-pos{padding:2px 7px;border-radius:4px;font-size:.62rem;font-weight:700;text-transform:uppercase;background:var(--card);color:var(--accent);border:1px solid var(--accent)}
+.wc-cn{color:var(--gold);font-size:.82rem;font-weight:600}
+.wc-stars{color:var(--gold);font-size:.7rem;letter-spacing:1px}
+.wc-spacer{flex:1}
+.wc-sound{width:30px;height:30px;border:none;background:transparent;color:var(--dim);font-size:.9rem;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.wc-sound:active{background:var(--card);color:var(--accent)}
+.wc-arrow{color:var(--dim);font-size:.7rem;transition:transform .2s}
+.word-card.open .wc-arrow{transform:rotate(180deg)}
+.wc-body{display:none;padding:0 14px 12px}.word-card.open .wc-body{display:block}
+
+/* ============================================
+   SENTENCE CARD - touch friendly
+   ============================================ */
+.sent{background:var(--card);border-radius:8px;margin-bottom:5px;border:1px solid transparent;transition:border-color .1s}
+.sent:active{border-color:var(--border)}
+.s-head{display:flex;align-items:flex-start;gap:5px;padding:10px 10px;cursor:pointer;min-height:44px}
+.s-num{min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:.65rem;font-weight:800;flex-shrink:0}
+.s-num-prof{background:#1e3a5f;color:var(--blue)}.s-num-stu{background:#312e81;color:var(--purple)}
+.s-num-write{background:#064e3b;color:var(--accent2)}.s-num-arg{background:#78350f;color:var(--orange)}.s-num-sum{background:#831843;color:var(--pink)}
+.s-num-prompt{background:#1e3a5f;color:var(--blue)}.s-num-instr{background:#4c1d95;color:var(--purple)}
+.s-num-email{background:#064e3b;color:var(--accent2)}.s-num-cross{background:#78350f;color:var(--orange)}
+.s-num-dialog{background:#1e3a5f;color:var(--blue)}.s-num-grammar{background:#312e81;color:var(--purple)}
+.s-num-trap{background:#7f1d1d;color:var(--red)}.s-num-output{background:#064e3b;color:var(--accent2)}
+html.light .s-num-prof{background:#dbeafe;color:#1d4ed8}html.light .s-num-stu{background:#ede9fe;color:#6d28d9}
+html.light .s-num-write{background:#d1fae5;color:#047857}html.light .s-num-arg{background:#fef3c7;color:#b45309}
+html.light .s-num-sum{background:#fce7f3;color:#be185d}html.light .s-num-prompt{background:#dbeafe;color:#1d4ed8}
+html.light .s-num-instr{background:#ede9fe;color:#6d28d9}html.light .s-num-email{background:#d1fae5;color:#047857}
+html.light .s-num-cross{background:#fef3c7;color:#b45309}html.light .s-num-dialog{background:#dbeafe;color:#1d4ed8}
+html.light .s-num-grammar{background:#ede9fe;color:#6d28d9}html.light .s-num-trap{background:#fee2e2;color:#991b1b}
+html.light .s-num-output{background:#d1fae5;color:#047857}
+.s-cat{font-size:.58rem;padding:2px 6px;border-radius:8px;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:1px;border:1px solid var(--border);color:var(--muted)}
+.s-en{font-size:.8rem;color:var(--text);flex:1;line-height:1.5}
+.s-en em{font-style:normal;color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.s-arrow{color:var(--dim);font-size:.6rem;flex-shrink:0;margin-top:3px;transition:transform .12s}
+.sent.open .s-arrow{transform:rotate(180deg)}
+.s-detail{display:none;padding:6px 10px 10px 10px;border-top:1px dashed var(--border)}
+.sent.open .s-detail{display:block}
+.ana{margin-bottom:5px}
+.ana-label{display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+.l-pos{color:var(--cyan)}.l-str{color:var(--purple)}.l-cn{color:var(--gold)}
+.ana-val{display:block;font-size:.78rem;background:var(--card2);padding:4px 10px;border-radius:5px;line-height:1.6;word-break:break-word}
+.ct{display:inline-block;padding:1px 5px;border-radius:3px;font-size:.6rem;font-weight:700;margin:0 1px;vertical-align:middle;white-space:nowrap}
+.ct-m{background:#064e3b;color:#6ee7b7}.ct-obj{background:#1e3a5f;color:#93c5fd}.ct-attr{background:#312e81;color:#c4b5fd}
+.ct-cau{background:#78350f;color:#fcd34d}.ct-con{background:#831843;color:#f9a8d4}.ct-cond{background:#4c1d95;color:#ddd6fe}
+.ct-time{background:#134e4a;color:#5eead4}.ct-purp{background:#3b0764;color:#e9d5ff}.ct-subj{background:#7f1d1d;color:#fca5a5}
+.ct-appo{background:#1e1b4b;color:#a5b4fc}.ct-part{background:#365314;color:#bef264}
+html.light .ct-m{background:#d1fae5;color:#047857}html.light .ct-obj{background:#dbeafe;color:#1d4ed8}
+html.light .ct-attr{background:#ede9fe;color:#6d28d9}html.light .ct-cau{background:#fef3c7;color:#92400e}
+html.light .ct-con{background:#fce7f3;color:#9d174d}html.light .ct-cond{background:#ede9fe;color:#5b21b6}
+html.light .ct-time{background:#ccfbf1;color:#0f766e}html.light .ct-purp{background:#f5f3ff;color:#6b21a8}
+html.light .ct-subj{background:#fee2e2;color:#991b1b}html.light .ct-appo{background:#e0e7ff;color:#3730a3}
+html.light .ct-part{background:#ecfccb;color:#3f6212}
+
+/* ============================================
+   QUIZ MODE - mobile optimized
+   ============================================ */
+.quiz-area{padding:8px 0}
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 16px;margin-bottom:12px;text-align:center;box-shadow:var(--shadow)}
+.quiz-prompt{font-size:1.05rem;color:var(--text);margin-bottom:6px;font-weight:600}
+.quiz-context{font-size:.78rem;color:var(--muted);margin-bottom:14px;font-style:italic;line-height:1.5}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:500px;margin:0 auto}
+.quiz-opt{padding:12px 14px;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;cursor:pointer;font-size:.88rem;transition:all .12s;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center}
+.quiz-opt:active{transform:scale(.97)}
+.quiz-opt.correct{background:#064e3b;border-color:var(--accent);color:var(--accent2)}
+.quiz-opt.wrong{background:#7f1d1d;border-color:var(--red);color:var(--red)}
+html.light .quiz-opt.correct{background:#d1fae5;color:#047857;border-color:#059669}
+html.light .quiz-opt.wrong{background:#fee2e2;color:#dc2626;border-color:#dc2626}
+.quiz-opt.disabled{pointer-events:none;opacity:.7}
+.quiz-score{font-size:.82rem;color:var(--muted);padding:6px 0;text-align:center}
+.quiz-score b{color:var(--accent)}
+.quiz-next{padding:10px 28px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:10px;cursor:pointer;font-size:.85rem;margin-top:10px;min-height:44px}
+.quiz-next:active{background:var(--accent);color:#0a0f1a}
+.quiz-controls{display:flex;gap:6px;justify-content:center;padding:6px 0;flex-wrap:wrap}
+
+/* ============================================
+   SETTINGS PANE (NEW)
+   ============================================ */
+.setting-group{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.setting-item{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);min-height:52px}
+.setting-item:last-child{border-bottom:none}
+.setting-label{flex:1;font-size:.85rem}
+.setting-sub{font-size:.7rem;color:var(--dim)}
+.setting-toggle{width:48px;height:28px;border-radius:14px;background:var(--card2);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.setting-toggle.on{background:var(--accent)}
+.setting-toggle::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.setting-toggle.on::after{transform:translateX(20px)}
+.font-slider{width:100px;accent-color:var(--accent)}
+.reset-btn{padding:10px 20px;border:1px solid var(--red);background:transparent;color:var(--red);border-radius:8px;cursor:pointer;font-size:.82rem;margin-top:8px;min-height:44px}
+.reset-btn:active{background:var(--red);color:#fff}
+.export-btn{padding:10px 20px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;cursor:pointer;font-size:.82rem;min-height:44px}
+.export-btn:active{background:var(--accent);color:#0a0f1a}
+
+/* ============================================
+   SCROLL TO TOP
+   ============================================ */
+.scroll-top{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);right:12px;width:40px;height:40px;border-radius:50%;background:var(--accent);color:#0a0f1a;border:none;font-size:1.1rem;cursor:pointer;box-shadow:var(--shadow);display:none;align-items:center;justify-content:center;z-index:90;transition:opacity .2s}
+.scroll-top.show{display:flex}
+@media(min-width:769px){.scroll-top{bottom:20px;right:20px}}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+/* Tablet portrait (600-768px) */
+@media(min-width:600px){
+  .container{padding:0 20px}
+  header h1{font-size:1.3rem}
+  .wc-word{font-size:1.15rem}
+  .wc-head{padding:14px 16px}
+  .s-detail{padding-left:36px}
+  .quiz-options{grid-template-columns:1fr 1fr}
+}
+/* Tablet landscape / Desktop (769px+) */
+@media(min-width:769px){
+  body{padding-bottom:0}
+  .container{padding:0 24px}
+  header h1{font-size:1.5rem}
+  header p{font-size:.82rem}
+  .wc-word{font-size:1.2rem}
+  .wc-head{padding:14px 18px}
+  .s-head{padding:10px 14px}
+  .s-detail{padding:6px 14px 12px 44px}
+  .ana-label{display:inline-block;min-width:50px;margin-bottom:0;vertical-align:top;padding-top:3px}
+  .ana-val{display:inline-block;max-width:calc(100% - 58px);vertical-align:top}
+}
+/* Large desktop (1200px+) */
+@media(min-width:1200px){
+  .container{max-width:1100px}
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;border-top:1px solid var(--border);margin-top:16px}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@media(prefers-reduced-motion:reduce){*{transition-duration:0s !important;animation-duration:0s !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-actions">
+    <button class="hdr-btn" id="themeBtn" title="Toggle theme">&#127769;</button>
+    <button class="hdr-btn" id="ttsBtn" title="Toggle audio pronunciation">&#128264;</button>
+  </div>
+  <h1>TOEFL iBT Writing Vocabulary</h1>
+  <p>248 words | 2,010 sentences with grammar analysis | 2026 OG + Real Exams</p>
+  <div class="hdr-stats" id="hdrStats"></div>
+</header>
+
+<!-- Desktop top tabs -->
+<div class="top-tabs" id="topTabs">
+  <button class="tab-btn active" data-t="task1">Task 1</button>
+  <button class="tab-btn" data-t="task2">Task 2</button>
+  <button class="tab-btn" data-t="task3">Task 3</button>
+  <button class="tab-btn" data-t="quiz">Quiz</button>
+  <button class="tab-btn" data-t="settings">Settings</button>
+</div>
+
+<div class="container">
+  <!-- TASK 1 -->
+  <div class="tab-pane active" id="pane-task1">
+    <div class="task-desc t1">
+      <h3>Task 1: Build a Sentence</h3>
+      <p>Rearrange scrambled words into correct sentences in campus dialogues. Key: question word order, auxiliaries, connectors.</p>
+    </div>
+    <div id="t1-modules"></div>
+    <div class="sticky-bar">
+      <input class="search" id="search-task1" placeholder="Search words...">
+      <div class="filter-row" id="filter-task1"><label>POS:</label></div>
+      <div class="filter-row" id="stars-task1"><label>Level:</label></div>
+    </div>
+    <div class="stats-line" id="stats-task1"></div>
+    <div class="progress"><div class="progress-fill pf-t1" id="prog-task1"></div></div>
+    <div id="grid-task1"></div>
+  </div>
+
+  <!-- TASK 2 -->
+  <div class="tab-pane" id="pane-task2">
+    <div class="task-desc t2">
+      <h3>Task 2: Write an Email</h3>
+      <p>Understand scenario + 3 instructions (describe/explain/suggest). 6 theme categories.</p>
+    </div>
+    <div id="t2-modules"></div>
+    <div class="sub-bar" id="sub-task2"></div>
+    <div class="sticky-bar">
+      <input class="search" id="search-task2" placeholder="Search words...">
+      <div class="filter-row" id="filter-task2"><label>POS:</label></div>
+      <div class="filter-row" id="stars-task2"><label>Level:</label></div>
+    </div>
+    <div class="stats-line" id="stats-task2"></div>
+    <div class="progress"><div class="progress-fill pf-t2" id="prog-task2"></div></div>
+    <div id="grid-task2"></div>
+  </div>
+
+  <!-- TASK 3 -->
+  <div class="tab-pane" id="pane-task3">
+    <div class="task-desc t3">
+      <h3>Task 3: Academic Discussion</h3>
+      <p>Read professor's Q + 2 student opinions. Write your own contribution.</p>
+    </div>
+    <div id="t3-modules"></div>
+    <div class="sticky-bar">
+      <input class="search" id="search-task3" placeholder="Search words...">
+      <div class="filter-row" id="filter-task3"><label>POS:</label></div>
+      <div class="filter-row" id="stars-task3"><label>Level:</label></div>
+    </div>
+    <div class="stats-line" id="stats-task3"></div>
+    <div class="progress"><div class="progress-fill pf-t3" id="prog-task3"></div></div>
+    <div id="grid-task3"></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="tab-pane" id="pane-quiz">
+    <div class="task-desc">
+      <h3>Quiz Mode</h3>
+      <p>Chinese meaning or example sentence -> select the correct English word. 3-5x more effective than passive browsing.</p>
+    </div>
+    <div class="quiz-controls" id="quizControls"></div>
+    <div class="quiz-score" id="quizScore"></div>
+    <div class="quiz-area" id="quizArea"></div>
+  </div>
+
+  <!-- SETTINGS (NEW) -->
+  <div class="tab-pane" id="pane-settings">
+    <div class="task-desc">
+      <h3>Settings</h3>
+      <p>Customize your learning experience.</p>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-item">
+        <div><div class="setting-label">Dark Mode</div><div class="setting-sub">Toggle light/dark theme</div></div>
+        <button class="setting-toggle" id="settingTheme"></button>
+      </div>
+      <div class="setting-item">
+        <div><div class="setting-label">Auto Pronunciation</div><div class="setting-sub">Speak word when card opens</div></div>
+        <button class="setting-toggle" id="settingTTS"></button>
+      </div>
+      <div class="setting-item">
+        <div><div class="setting-label">Font Size</div><div class="setting-sub">Adjust text size</div></div>
+        <input type="range" class="font-slider" id="fontSlider" min="0.85" max="1.3" step="0.05" value="1">
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-item">
+        <div><div class="setting-label">Study Stats</div><div class="setting-sub" id="studyStatsDetail"></div></div>
+      </div>
+      <div class="setting-item">
+        <div><div class="setting-label">Export Mastered Words</div><div class="setting-sub">Copy to clipboard as text list</div></div>
+        <button class="export-btn" id="exportBtn">Export</button>
+      </div>
+      <div class="setting-item">
+        <div><div class="setting-label">Reset All Progress</div><div class="setting-sub">Clear mastered words and quiz scores</div></div>
+        <button class="reset-btn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" title="Back to top">&#8593;</button>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-t="task1"><span class="nav-icon">&#9997;</span><span>Task 1</span></div>
+  <div class="nav-item" data-t="task2"><span class="nav-icon">&#9993;</span><span>Task 2</span></div>
+  <div class="nav-item" data-t="task3"><span class="nav-icon">&#128172;</span><span>Task 3</span></div>
+  <div class="nav-item" data-t="quiz"><span class="nav-icon">&#10068;</span><span>Quiz</span></div>
+  <div class="nav-item" data-t="settings"><span class="nav-icon">&#9881;</span><span>Settings</span></div>
+</nav>
+
+<footer>TOEFL iBT 2026 | 248 Words | 2,010 Sentences | OG + Real Exams</footer>
+
+<script src="toefl-vocab-engine.js"></script>
+<script src="toefl-task1-data.js"></script>
+<script src="toefl-task2-data.js"></script>
+<script src="toefl-task3-full-data.js"></script>
+<script>
+// --- Mobile nav + top tabs unified switching ---
+function switchPane(t){
+  // Update all nav items
+  document.querySelectorAll('.nav-item,.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('[data-t="'+t+'"]').forEach(function(b){b.classList.add('active');});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+  var pane=document.getElementById('pane-'+t);
+  if(pane)pane.classList.add('active');
+  if(t==='quiz' && typeof initQuiz==='function')initQuiz();
+  if(t==='settings')updateSettingsPane();
+  window.scrollTo({top:0});
+}
+document.getElementById('bottomNav').addEventListener('click',function(e){
+  var item=e.target.closest('.nav-item');
+  if(item)switchPane(item.getAttribute('data-t'));
+});
+document.getElementById('topTabs').addEventListener('click',function(e){
+  var btn=e.target.closest('.tab-btn');
+  if(btn)switchPane(btn.getAttribute('data-t'));
+});
+// Override engine's tab switching to use unified function
+if(typeof document.getElementById('tabBar')!=='undefined'){
+  var oldTabBar=document.getElementById('tabBar');
+  if(oldTabBar)oldTabBar.style.display='none';
+}
+
+// --- Theme toggle (header button + settings toggle) ---
+function applyTheme(isLight){
+  if(isLight)document.documentElement.classList.add('light');
+  else document.documentElement.classList.remove('light');
+  document.getElementById('themeBtn').textContent=isLight?'\u2600\ufe0f':'\ud83c\udf19';
+  document.querySelector('meta[name="theme-color"]').content=isLight?'#f8fafc':'#0a0f1a';
+  var st=document.getElementById('settingTheme');
+  if(st){if(isLight)st.classList.add('on');else st.classList.remove('on');}
+  localStorage.setItem('toefl_theme2',isLight?'light':'dark');
+}
+document.getElementById('themeBtn').addEventListener('click',function(){
+  applyTheme(!document.documentElement.classList.contains('light'));
+});
+document.getElementById('settingTheme').addEventListener('click',function(){
+  applyTheme(!this.classList.contains('on'));
+});
+if(localStorage.getItem('toefl_theme2')==='light')applyTheme(true);
+
+// --- TTS (text-to-speech) ---
+var ttsEnabled=localStorage.getItem('toefl_tts')==='1';
+function updateTTSUI(){
+  document.getElementById('ttsBtn').style.opacity=ttsEnabled?'1':'.4';
+  var st=document.getElementById('settingTTS');
+  if(st){if(ttsEnabled)st.classList.add('on');else st.classList.remove('on');}
+}
+updateTTSUI();
+document.getElementById('ttsBtn').addEventListener('click',function(){
+  ttsEnabled=!ttsEnabled;
+  localStorage.setItem('toefl_tts',ttsEnabled?'1':'0');
+  updateTTSUI();
+});
+document.getElementById('settingTTS').addEventListener('click',function(){
+  ttsEnabled=!ttsEnabled;
+  localStorage.setItem('toefl_tts',ttsEnabled?'1':'0');
+  updateTTSUI();
+});
+// Speak function used by word cards
+window.speakWord=function(word){
+  if(!ttsEnabled||!window.speechSynthesis)return;
+  var u=new SpeechSynthesisUtterance(word);
+  u.lang='en-US';u.rate=0.85;
+  speechSynthesis.speak(u);
+};
+
+// --- Font size ---
+var fontSlider=document.getElementById('fontSlider');
+var savedFont=localStorage.getItem('toefl_font');
+if(savedFont){document.documentElement.style.setProperty('--font-scale',savedFont);fontSlider.value=savedFont;}
+fontSlider.addEventListener('input',function(){
+  document.documentElement.style.setProperty('--font-scale',this.value);
+  localStorage.setItem('toefl_font',this.value);
+});
+
+// --- Scroll to top ---
+var scrollBtn=document.getElementById('scrollTop');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>400)scrollBtn.classList.add('show');
+  else scrollBtn.classList.remove('show');
+},{passive:true});
+scrollBtn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+// --- Export mastered words ---
+document.getElementById('exportBtn').addEventListener('click',function(){
+  var m=JSON.parse(localStorage.getItem('toefl_m2')||'{}');
+  var lines=Object.keys(m).map(function(k){return k.replace(/^task\d_/,'');});
+  if(lines.length===0){alert('No mastered words yet!');return;}
+  var text='TOEFL Writing - Mastered Words ('+lines.length+')\n\n'+lines.join('\n');
+  navigator.clipboard.writeText(text).then(function(){alert('Copied '+lines.length+' words to clipboard!');});
+});
+
+// --- Reset progress ---
+document.getElementById('resetBtn').addEventListener('click',function(){
+  if(confirm('Are you sure? This will clear all mastered words and quiz history.')){
+    localStorage.removeItem('toefl_m2');
+    location.reload();
+  }
+});
+
+// --- Settings pane update ---
+function updateSettingsPane(){
+  var m=JSON.parse(localStorage.getItem('toefl_m2')||'{}');
+  var total=Object.keys(m).length;
+  var el=document.getElementById('studyStatsDetail');
+  if(el)el.textContent='Mastered: '+total+' words | Total: 248 words';
+}
+</script>
+</body>
+</html>

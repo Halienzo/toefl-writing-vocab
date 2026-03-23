@@ -1,0 +1,11 @@
+{
+  "name": "TOEFL Writing Vocabulary",
+  "short_name": "TOEFL Vocab",
+  "description": "248 words, 2010 sentences with grammar analysis for TOEFL iBT Writing",
+  "start_url": "./toefl-writing-vocab.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0f1a",
+  "theme_color": "#0a0f1a",
+  "icons": []
+}
