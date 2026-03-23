@@ -62,6 +62,7 @@ html.light .bottom-nav{box-shadow:0 -1px 6px rgba(0,0,0,.06)}
 .tab-btn[data-t="task2"].active{color:var(--t2);border-bottom-color:var(--t2)}
 .tab-btn[data-t="task3"].active{color:var(--t3);border-bottom-color:var(--t3)}
 .tab-btn[data-t="quiz"].active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn[data-t="mock"].active{color:var(--t1);border-bottom-color:var(--t1)}
 .tab-btn[data-t="settings"].active{color:var(--muted);border-bottom-color:var(--muted)}
 
 /* ============================================
@@ -336,6 +337,7 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
   <button class="tab-btn" data-t="task2">Task 2</button>
   <button class="tab-btn" data-t="task3">Task 3</button>
   <button class="tab-btn" data-t="quiz">Quiz</button>
+  <button class="tab-btn" data-t="mock">Mock Test</button>
   <button class="tab-btn" data-t="settings">Settings</button>
 </div>
 
@@ -403,6 +405,9 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
     <div class="quiz-area" id="quizArea"></div>
   </div>
 
+  <!-- MOCK TEST -->
+  <div class="tab-pane" id="pane-mock"></div>
+
   <!-- SETTINGS (NEW) -->
   <div class="tab-pane" id="pane-settings">
     <div class="task-desc">
@@ -449,6 +454,7 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
   <div class="nav-item" data-t="task2"><span class="nav-icon">&#9993;</span><span>Task 2</span></div>
   <div class="nav-item" data-t="task3"><span class="nav-icon">&#128172;</span><span>Task 3</span></div>
   <div class="nav-item" data-t="quiz"><span class="nav-icon">&#10068;</span><span>Quiz</span></div>
+  <div class="nav-item" data-t="mock"><span class="nav-icon">&#127919;</span><span>Mock</span></div>
   <div class="nav-item" data-t="settings"><span class="nav-icon">&#9881;</span><span>Settings</span></div>
 </nav>
 
@@ -458,6 +464,8 @@ footer{text-align:center;padding:20px 12px;color:var(--dim);font-size:.68rem;bor
 <script src="toefl-task1-data.js"></script>
 <script src="toefl-task2-data.js"></script>
 <script src="toefl-task3-full-data.js"></script>
+<script src="toefl-mock-questions.js"></script>
+<script src="toefl-mock-engine.js"></script>
 <script>
 // --- Mobile nav + top tabs unified switching ---
 function switchPane(t){
@@ -468,6 +476,7 @@ function switchPane(t){
   var pane=document.getElementById('pane-'+t);
   if(pane)pane.classList.add('active');
   if(t==='quiz' && typeof initQuiz==='function')initQuiz();
+  if(t==='mock' && typeof initMockTest==='function')initMockTest();
   if(t==='settings')updateSettingsPane();
   window.scrollTo({top:0});
 }
