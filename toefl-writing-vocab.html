@@ -526,20 +526,42 @@ if(typeof ICON!=='undefined'){
 function applyTheme(isLight){
   if(isLight)document.documentElement.classList.add('light');
   else document.documentElement.classList.remove('light');
-  setIcon('themeBtn',isLight?ICON.sun(16):ICON.moon(16));
-  document.querySelector('meta[name="theme-color"]').content=isLight?'#f8fafc':'#0a0f1a';
+  // Update icon safely - check ICON exists
+  if(typeof ICON!=='undefined'){
+    setIcon('themeBtn',isLight?ICON.sun(16):ICON.moon(16));
+  } else {
+    var tb=document.getElementById('themeBtn');
+    if(tb) tb.textContent=isLight?'\u2600':'\u263D';
+  }
+  var mc=document.querySelector('meta[name="theme-color"]');
+  if(mc) mc.content=isLight?'#f8fafc':'#0a0f1a';
   var st=document.getElementById('settingTheme');
   if(st){if(isLight)st.classList.add('on');else st.classList.remove('on');}
   localStorage.setItem('toefl_theme2',isLight?'light':'dark');
 }
-document.getElementById('themeBtn').addEventListener('click',function(){
-  applyTheme(!document.documentElement.classList.contains('light'));
-});
-document.getElementById('settingTheme').addEventListener('click',function(){
-  applyTheme(!this.classList.contains('on'));
-});
+// Header button - use touchend for mobile + click for desktop
+var themeBtnEl=document.getElementById('themeBtn');
+if(themeBtnEl){
+  var themeHandler=function(e){
+    e.preventDefault();e.stopPropagation();
+    applyTheme(!document.documentElement.classList.contains('light'));
+  };
+  themeBtnEl.addEventListener('click',themeHandler);
+  themeBtnEl.addEventListener('touchend',themeHandler);
+}
+// Settings toggle
+var settingThemeEl=document.getElementById('settingTheme');
+if(settingThemeEl){
+  var settingThemeHandler=function(e){
+    e.preventDefault();
+    applyTheme(!this.classList.contains('on'));
+  };
+  settingThemeEl.addEventListener('click',settingThemeHandler);
+  settingThemeEl.addEventListener('touchend',settingThemeHandler);
+}
+// Apply saved theme
 if(localStorage.getItem('toefl_theme2')==='light'){applyTheme(true);}
-else{setIcon('themeBtn',ICON.moon(16));}
+else{if(typeof ICON!=='undefined')setIcon('themeBtn',ICON.moon(16));else{var tb2=document.getElementById('themeBtn');if(tb2)tb2.textContent='\u263D';}}
 
 // --- TTS (text-to-speech) ---
 var ttsEnabled=localStorage.getItem('toefl_tts')==='1';
@@ -550,22 +572,26 @@ function updateTTSUI(){
   if(st){if(ttsEnabled)st.classList.add('on');else st.classList.remove('on');}
 }
 updateTTSUI();
-document.getElementById('ttsBtn').addEventListener('click',function(){
-  ttsEnabled=!ttsEnabled;
-  localStorage.setItem('toefl_tts',ttsEnabled?'1':'0');
-  updateTTSUI();
-});
-document.getElementById('settingTTS').addEventListener('click',function(){
-  ttsEnabled=!ttsEnabled;
-  localStorage.setItem('toefl_tts',ttsEnabled?'1':'0');
-  updateTTSUI();
-});
+var ttsBtnEl=document.getElementById('ttsBtn');
+var ttsHandler=function(e){e.preventDefault();ttsEnabled=!ttsEnabled;localStorage.setItem('toefl_tts',ttsEnabled?'1':'0');updateTTSUI();};
+if(ttsBtnEl){ttsBtnEl.addEventListener('click',ttsHandler);ttsBtnEl.addEventListener('touchend',ttsHandler);}
+var settingTTSEl=document.getElementById('settingTTS');
+var settingTTSHandler=function(e){e.preventDefault();ttsEnabled=!ttsEnabled;localStorage.setItem('toefl_tts',ttsEnabled?'1':'0');updateTTSUI();};
+if(settingTTSEl){settingTTSEl.addEventListener('click',settingTTSHandler);settingTTSEl.addEventListener('touchend',settingTTSHandler);}
 // Speak function used by word cards
-window.speakWord=function(word){
-  if(!ttsEnabled||!window.speechSynthesis)return;
+// On mobile, speechSynthesis.speak() MUST be called from a direct user gesture.
+// The sound button click IS a direct gesture, so it works.
+// Auto-speak on card open is NOT a direct gesture, so it may be blocked on mobile.
+window.speakWord=function(word, isDirectGesture){
+  if(!window.speechSynthesis) return;
+  // If auto-speak (not direct gesture), only speak if TTS is enabled
+  if(!isDirectGesture && !ttsEnabled) return;
+  // Cancel any ongoing speech first
+  speechSynthesis.cancel();
   var u=new SpeechSynthesisUtterance(word);
   u.lang='en-US';u.rate=0.85;
-  speechSynthesis.speak(u);
+  // Mobile Safari needs a small delay after cancel
+  setTimeout(function(){speechSynthesis.speak(u);}, 10);
 };
 
 // --- Font size ---

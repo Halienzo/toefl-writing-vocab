@@ -287,14 +287,20 @@ function renderWords(task){
     // TTS sound button
     var soundBtn=document.createElement("button");soundBtn.className="wc-sound";
     if(typeof ICON!=="undefined"){soundBtn.innerHTML=ICON.volume(14);}else{soundBtn.textContent="\ud83d\udd0a";}
-    soundBtn.addEventListener("click",(function(word){return function(e){e.stopPropagation();if(typeof speakWord==="function")speakWord(word);};})(w.w));
+    // Sound button: direct gesture tap -> always speaks (even if TTS toggle is off)
+    var soundHandler=(function(word){return function(e){
+      e.stopPropagation();e.preventDefault();
+      if(typeof speakWord==="function")speakWord(word,true);
+    };})(w.w);
+    soundBtn.addEventListener("click",soundHandler);
+    soundBtn.addEventListener("touchend",soundHandler);
     head.appendChild(sp1);head.appendChild(sp2);head.appendChild(sp3);head.appendChild(sp5);
     head.appendChild(soundBtn);head.appendChild(sp4);head.appendChild(spacer);head.appendChild(lbl);head.appendChild(arrow);
     head.addEventListener("click",function(e){
-      if(e.target.tagName==="INPUT"||e.target.classList.contains("wc-sound"))return;
+      if(e.target.tagName==="INPUT"||e.target.closest(".wc-sound"))return;
       card.classList.toggle("open");
-      // Auto-speak when opening
-      if(card.classList.contains("open")&&typeof speakWord==="function")speakWord(w.w);
+      // Auto-speak when opening (non-direct gesture, respects TTS toggle)
+      if(card.classList.contains("open")&&typeof speakWord==="function")speakWord(w.w,false);
     });
     card.appendChild(head);
     var body=document.createElement("div");body.className="wc-body";
